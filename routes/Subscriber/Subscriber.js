@@ -26,13 +26,13 @@ router.post(
         },
         redirect_urls: {
           return_url:
-            "http://192.168.8.100:3000/subscriber/success?price=" +
+            "https://freefindz.herokuapp.com/subscriber/success?price=" +
             req.body.price +
             "&day=" +
             req.body.day +
             "&id=" +
             req.body.id,
-          cancel_url: "http://192.168.8.100:3000/subscriber/cancel",
+          cancel_url: "https://freefindz.herokuapp.com/subscriber/cancel",
         },
         transactions: [
           {
