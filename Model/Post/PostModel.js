@@ -26,6 +26,7 @@ var postSchema = mongoose.Schema({
   pic: Array,
   cover: String,
   expiresAt: Date,
+  comment: Array,
 });
 
 postSchema.statics.getPost = async function (id) {
@@ -61,6 +62,7 @@ postSchema.methods.addPost = async function (data) {
     pic: data.pic,
     cover: data.cover,
     expiresAt: data.expiresAt,
+    comment: [],
   });
 
   post = await post.save();
@@ -83,6 +85,14 @@ postSchema.statics.updatePost = async function (id, data) {
   post.expiresAt = data.expiresAt;
   post = await post.save();
   return post;
+};
+
+postSchema.methods.addPostComment = async function (id, data) {
+  // Add post
+  let post = await PostModel.findById(id);
+  post.comment.push(data);
+  post = await post.save();
+  return post.comment;
 };
 
 postSchema.statics.deletePost = async function (id) {
@@ -116,6 +126,7 @@ function validatePost(data) {
       lng: Joi.number().required(),
       place: Joi.string().required(),
     }),
+    comment: Joi.array(),
   });
   return schema.validate(data, { abortEarly: false });
 }

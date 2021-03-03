@@ -37,6 +37,20 @@ router.get("/category/:category", async function (req, res, next) {
   }
 });
 /* GET users listing. */
+router.post("/addComment", Auth, async function (req, res, next) {
+  try {
+    let post = await PostModel().addPostComment(
+      req.body.postId,
+      req.body.comment
+    );
+    res.status(200).send(post);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send(err.message);
+  }
+});
+
+/* GET users listing. */
 router.post("/", Auth, PostValidator, async function (req, res, next) {
   try {
     let post = new PostModel();
