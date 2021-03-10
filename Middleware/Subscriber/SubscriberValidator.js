@@ -11,6 +11,5 @@ module.exports = async function (req, res, next) {
         .send(`Already have a Subscription ends in ${a.diff(b, "days")}!`);
     req.isValidated = true;
   }
-
   next();
 };

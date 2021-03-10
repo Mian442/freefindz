@@ -1,6 +1,7 @@
 var mongoose = require("mongoose");
 var bcrypt = require("bcryptjs");
 var Joi = require("joi");
+const ExpoTokenModel = require("./ExpoToken");
 var userSchema = mongoose.Schema({
   name: String,
   username: String,
@@ -29,6 +30,13 @@ userSchema.statics.getUserByUsername = async function (data) {
   const user = await UserModel.findOne({
     username: data.username,
   });
+  let expo = await ExpoTokenModel.findOne({ user: user._id });
+  if (!expo) {
+    expo = new ExpoTokenModel();
+    expo = await expo.addExpoToken(user._id, data.expo_token);
+    await expo.save();
+  }
+
   return {
     _id: user._id,
     name: user.name,
@@ -52,6 +60,11 @@ userSchema.statics.addUser = async function (data) {
   });
 
   user = await user.save();
+  let expo = new ExpoTokenModel({
+    user: user._id,
+    token: data.expo_token,
+  });
+  await expo.save();
   return {
     _id: user._id,
     name: user.name,
@@ -116,6 +129,7 @@ function validateUserLogin(data) {
   const schema = Joi.object({
     email: Joi.string().email().min(3).required(),
     password: Joi.string().min(8).required(),
+    expo_token: Joi.string(),
   });
   return schema.validate(data, { abortEarly: false });
 }

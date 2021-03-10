@@ -8,6 +8,7 @@ const NonProfitModel = require("../../Model/Type/NonProfit");
 const UserModel = require("../../Model/User/UserModel");
 const RegistrationValidator = require("../../Middleware/User/RegistrationValidator");
 const PasswordValidator = require("../../Middleware/User/PasswordValidator");
+const ExpoTokenModel = require("../../Model/User/ExpoToken");
 var router = express.Router();
 
 /* GET users listing. */
@@ -42,7 +43,6 @@ router.post(
     try {
       let user = new UserModel();
       user = await UserModel.addUser(req.body.user);
-
       if (req.body.user.type.text === "Individual") {
         let individual = new IndividualModel();
         await individual.addIndividual(user._id, req.body.individual);
@@ -53,6 +53,8 @@ router.post(
         let non_profit = new NonProfitModel();
         await non_profit.addNonProfit(user._id, req.body.non_profit);
       }
+      let token = new ExpoTokenModel();
+      await token.addExpoToken(user._id, req.body.token);
       res.status(200).send(user);
     } catch (err) {
       console.log(err);

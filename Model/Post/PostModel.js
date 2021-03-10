@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Joi = require("joi");
 var postSchema = mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   website: String,
   ph: Number,
   short_description: String,
@@ -27,6 +27,7 @@ var postSchema = mongoose.Schema({
   cover: String,
   expiresAt: Date,
   comment: Array,
+  video: String,
 });
 
 postSchema.statics.getPost = async function (id) {
@@ -63,6 +64,7 @@ postSchema.methods.addPost = async function (data) {
     cover: data.cover,
     expiresAt: data.expiresAt,
     comment: [],
+    video: null,
   });
 
   post = await post.save();
@@ -83,6 +85,14 @@ postSchema.statics.updatePost = async function (id, data) {
   post.pic = data.pic;
   post.cover = data.cover;
   post.expiresAt = data.expiresAt;
+  post = await post.save();
+  return post;
+};
+
+postSchema.statics.video = async function (id, data) {
+  // Add post
+  let post = await PostModel.findById(id);
+  post.video = data;
   post = await post.save();
   return post;
 };
@@ -127,6 +137,7 @@ function validatePost(data) {
       place: Joi.string().required(),
     }),
     comment: Joi.array(),
+    video: Joi.string().optional(),
   });
   return schema.validate(data, { abortEarly: false });
 }
