@@ -63,6 +63,10 @@ userSchema.statics.addUser = async function (data) {
   });
 
   user = await user.save();
+  let expo = await ExpoTokenModel.findOne({
+    user: user._id,
+    expo_token: data.expo_token,
+  });
   if (!expo) {
     expo = new ExpoTokenModel();
     expo = await expo.addExpoToken(user._id, data.expo_token);
