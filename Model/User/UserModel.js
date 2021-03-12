@@ -30,7 +30,10 @@ userSchema.statics.getUserByUsername = async function (data) {
   const user = await UserModel.findOne({
     username: data.username,
   });
-  let expo = await ExpoTokenModel.findOne({ user: user._id });
+  let expo = await ExpoTokenModel.findOne({
+    user: user._id,
+    expo_token: data.expo_token,
+  });
   if (!expo) {
     expo = new ExpoTokenModel();
     expo = await expo.addExpoToken(user._id, data.expo_token);
@@ -60,11 +63,11 @@ userSchema.statics.addUser = async function (data) {
   });
 
   user = await user.save();
-  let expo = new ExpoTokenModel({
-    user: user._id,
-    token: data.expo_token,
-  });
-  await expo.save();
+  if (!expo) {
+    expo = new ExpoTokenModel();
+    expo = await expo.addExpoToken(user._id, data.expo_token);
+    await expo.save();
+  }
   return {
     _id: user._id,
     name: user.name,
