@@ -9,6 +9,7 @@ const fileUpload = require("express-fileupload");
 const ExpoTokenModel = require("../../Model/User/ExpoToken");
 var multer = require("multer");
 const fs = require("fs-extra");
+var rimraf = require("rimraf");
 let app = express();
 app.use(fileUpload());
 var storage = multer.diskStorage({
@@ -34,6 +35,16 @@ router.get("/", async function (req, res) {
 
 /* GET users listing. */
 router.get("/:id", async function (req, res) {
+  try {
+    let post = await PostModel.getPostByUser(req.params.id);
+    res.status(200).send(post);
+  } catch (err) {
+    console.log(err);
+    res.status(400).send(err.message);
+  }
+});
+
+router.get("/id/:id", async function (req, res) {
   try {
     let post = await PostModel.getPostById(req.params.id);
     res.status(200).send(post);
@@ -129,15 +140,19 @@ router.post("/addVideo", upload.single("document"), async function (req, res) {
     console.log(req.file, req.query, process.env.NODE_ENV);
     const currentPath = req.file.path;
     const destinationPath = `video/${req.query.id}/${req.file.originalname}`;
-    console.log(currentPath, destinationPath);
 
-    await fs.move(currentPath, `public/${destinationPath}`, function (err) {
-      if (err) {
-        throw err;
-      } else {
-        console.log("Successfully moved the file!");
+    await fs.move(
+      currentPath,
+      `public/${destinationPath}`,
+      { overwrite: true },
+      function (err) {
+        if (err) {
+          throw err;
+        } else {
+          console.log("Successfully moved the file!");
+        }
       }
-    });
+    );
     await PostModel.video(
       req.query.id,
       `${process.env.URL}/${destinationPath}`
@@ -162,6 +177,9 @@ router.put("/", Auth, PostCURDValidator, async function (req, res) {
 router.delete("/:id", async function (req, res) {
   try {
     await PostModel.deletePost(req.body);
+    rimraf("/public/video/" + req.params.id, function () {
+      console.log("done");
+    });
     res.status(200).send("Post Deleted!");
   } catch (err) {
     console.log(err);

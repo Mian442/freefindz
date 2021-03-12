@@ -30,22 +30,29 @@ var postSchema = mongoose.Schema({
   video: String,
 });
 
-postSchema.statics.getPost = async function (id) {
-  let post = await PostModel.find();
+postSchema.statics.getPost = async function () {
+  let post = await PostModel.find().select(
+    "cover expiresAt short_description category _id"
+  );
+  return post;
+};
+
+postSchema.statics.getPostByUser = async function (id) {
+  let post = await PostModel.find({
+    user: id,
+  }).select("cover expiresAt short_description category _id");
   return post;
 };
 
 postSchema.statics.getPostById = async function (id) {
-  let post = await PostModel.find({
-    user: id,
-  });
+  let post = await PostModel.findById(id);
   return post;
 };
 
 postSchema.statics.getPostByCategory = async function (category) {
   let post = await PostModel.find({
     "category.text": { $regex: `^${category}`, $options: "i" },
-  });
+  }).select("cover expiresAt short_description category _id");
   return post;
 };
 postSchema.methods.addPost = async function (data) {
