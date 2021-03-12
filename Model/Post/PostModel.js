@@ -32,7 +32,7 @@ var postSchema = mongoose.Schema({
 
 postSchema.statics.getPost = async function () {
   let post = await PostModel.find().select(
-    "cover expiresAt short_description category _id"
+    "cover expiresAt short_description category _id address"
   );
   return post;
 };
