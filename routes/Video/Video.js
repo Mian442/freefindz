@@ -13,10 +13,11 @@ router.get("/:folder/name", function (req, res, next) {
     // get video stats (about 61MB)
     const videoPath = `/video/${req.params.folder}/${req.params.name}`;
     const videoSize = fs.statSync(videoPath).size;
+    console.log(size);
 
     // Parse Range
     // Example: "bytes=32324-"
-    const CHUNK_SIZE = 10 ** 7; // 10MB
+    const CHUNK_SIZE = 10 ** 7 + 5; // 15MB
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
