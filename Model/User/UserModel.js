@@ -123,6 +123,7 @@ function validateUser(data) {
     pic: Joi.optional(),
     type: Joi.optional(),
     ph: Joi.number(),
+    expo_token: Joi.string().required(),
   });
   return schema.validate(data, { abortEarly: false });
 }

@@ -144,7 +144,7 @@ function validatePost(data) {
       place: Joi.string().required(),
     }),
     comment: Joi.array(),
-    video: Joi.string().optional(),
+    video: Joi.optional(),
   });
   return schema.validate(data, { abortEarly: false });
 }
